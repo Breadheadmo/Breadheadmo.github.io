@@ -11,10 +11,12 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "TechPulse - Latest Tech News",
   description: "Stay updated with the latest technology news, trends, and insights.",
-    generator: 'v0.dev'
+  generator: 'v0.dev'
 }
 
-export default function RootLayout({
+
+
+export default function Layout({
   children,
 }: {
   children: React.ReactNode
