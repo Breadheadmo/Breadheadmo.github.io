@@ -1,6 +1,6 @@
 import type { Article, Author, Category, Tag } from "./types"
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api"
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://memburb-api-eunbs.ondigitalocean.app/api"
 
 // Mock data for development/preview
 const mockCategories: Category[] = [
@@ -136,13 +136,11 @@ const mockArticles: Article[] = [
 ]
 
 // Generic fetch function with error handling and fallbacks
-async function fetchAPI(endpoint: string): Promise<any> {
-  // If no API URL is configured, return mock data
-  if (!process.env.NEXT_PUBLIC_API_URL) {
-    console.log("Using mock data - API URL not configured")
-    return getMockData(endpoint)
-  }
+// Update the API_BASE_URL to point to the new backend
+// API_BASE_URL is already declared at the top of the file
 
+// Update the fetchAPI function to match the new API structure
+async function fetchAPI(endpoint: string): Promise<any> {
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       next: { revalidate: 60 },
@@ -162,6 +160,207 @@ async function fetchAPI(endpoint: string): Promise<any> {
     return getMockData(endpoint)
   }
 }
+
+// Update the article API functions to match the new endpoints
+async function getArticlesData(): Promise<Article[]> {
+  const data = await fetchAPI("/articles/posts")
+  return data?.articles || []
+}
+
+async function getArticleBySlugOld(slug: string): Promise<Article | null> {
+  const articles = await getArticles()
+  return articles.find(article => article.slug === slug) || null
+}
+
+async function getFeaturedArticlesOld(limit = 5): Promise<Article[]> {
+  const articles = await getArticles()
+  return articles
+    .filter(article => article.featured)
+    .slice(0, limit)
+}
+
+async function getLatestArticlesOld(limit = 10): Promise<Article[]> {
+  const articles = await getArticles()
+  return articles
+    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+    .slice(0, limit)
+}
+
+async function getTopArticlesOld(limit = 3): Promise<Article[]> {
+  const articles = await getArticles()
+  return articles
+    .sort((a, b) => (b.views || 0) - (a.views || 0))
+    .slice(0, limit)
+}
+
+async function getArticlesByCategoryOld(categorySlug: string): Promise<Article[]> {
+  const articles = await getArticles()
+  return articles.filter(article => article.category?.slug === categorySlug)
+}
+
+async function getArticlesByTagOld(tagSlug: string): Promise<Article[]> {
+  const articles = await getArticles()
+  return articles.filter(article => article.tags?.some(tag => tag.slug === tagSlug))
+}
+
+async function getArticlesByAuthorOld(authorSlug: string): Promise<Article[]> {
+  const articles = await getArticles()
+  return articles.filter(article => article.author?.slug === authorSlug)
+}
+
+export async function getRelatedArticles(
+  currentArticleId: string,
+  category: Category,
+  tags: Tag[],
+  limit = 3,
+): Promise<Article[]> {
+  // First try to get articles from the same category
+  const data = await fetchAPI(
+    `/articles?filters[category][slug][$eq]=${category.slug}&filters[id][$ne]=${currentArticleId}&populate=*&pagination[limit]=${limit}`,
+  )
+
+  let articles = data?.data || []
+
+  if (articles.length < limit && tags.length > 0) {
+    // If not enough articles, get articles with similar tags
+    const tagSlugs = tags.map((tag) => tag.slug).join(",")
+    const tagData = await fetchAPI(
+      `/articles?filters[tags][slug][$in]=${tagSlugs}&filters[id][$ne]=${currentArticleId}&populate=*&pagination[limit]=${limit}`,
+    )
+
+    // Combine and deduplicate results
+    const combined = [...articles, ...(tagData?.data || [])]
+    const unique = combined.filter((article, index, self) => index === self.findIndex((a) => a.id === article.id))
+    articles = unique
+  }
+
+  return articles.slice(0, limit)
+}
+
+// Author API functions
+
+
+// Category API functions
+
+
+// Tag API functions
+
+// Remove duplicate implementation since getTagBySlug already exists
+export async function getTagBySlug(slug: string): Promise<Tag | null> {
+  const data = await fetchAPI(`/tags?filters[slug][$eq]=${slug}`)
+  return data?.data?.[0] || null
+}
+
+// Mock data provider based on endpoint
+function getMockData(endpoint: string): any {
+  if (endpoint.includes("/articles")) {
+    if (endpoint.includes("featured")) {
+      return { data: mockArticles.filter((a) => a.featured) }
+    }
+    if (endpoint.includes("views:desc")) {
+      return { data: [...mockArticles].sort((a, b) => b.views - a.views) }
+    }
+    if (endpoint.includes("publishedAt:desc")) {
+      return {
+        data: [...mockArticles].sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()),
+      }
+    }
+    if (endpoint.includes("category")) {
+      const categorySlug = endpoint.match(/category\]\[slug\]\[\$eq\]=([^&]+)/)?.[1]
+      return { data: mockArticles.filter((a) => a.category.slug === categorySlug) }
+    }
+    if (endpoint.includes("tags")) {
+      const tagSlug = endpoint.match(/tags\]\[slug\]\[\$eq\]=([^&]+)/)?.[1]
+      return { data: mockArticles.filter((a) => a.tags.some((t) => t.slug === tagSlug)) }
+    }
+    if (endpoint.includes("author")) {
+      const authorSlug = endpoint.match(/author\]\[slug\]\[\$eq\]=([^&]+)/)?.[1]
+      return { data: mockArticles.filter((a) => a.author.slug === authorSlug) }
+    }
+    if (endpoint.includes("slug")) {
+      const slug = endpoint.match(/slug\]\[\$eq\]=([^&]+)/)?.[1]
+      return { data: mockArticles.filter((a) => a.slug === slug) }
+    }
+    return { data: mockArticles }
+  }
+
+  if (endpoint.includes("/authors")) {
+    if (endpoint.includes("slug")) {
+      const slug = endpoint.match(/slug\]\[\$eq\]=([^&]+)/)?.[1]
+      return { data: mockAuthors.filter((a) => a.slug === slug) }
+    }
+    return { data: mockAuthors }
+  }
+
+  if (endpoint.includes("/categories")) {
+    if (endpoint.includes("slug")) {
+      const slug = endpoint.match(/slug\]\[\$eq\]=([^&]+)/)?.[1]
+      return { data: mockCategories.filter((c) => c.slug === slug) }
+    }
+    return { data: mockCategories }
+  }
+
+  if (endpoint.includes("/tags")) {
+    if (endpoint.includes("slug")) {
+      const slug = endpoint.match(/slug\]\[\$eq\]=([^&]+)/)?.[1]
+      return { data: mockTags.filter((t) => t.slug === slug) }
+    }
+    return { data: mockTags }
+  }
+
+  return { data: [] }
+}
+
+// Article API functions
+// Removed duplicate getArticlesData function since it's already defined
+  const data = await fetchAPI("/articles?populate=*")
+  return data?.data || []
+}
+
+async function getArticleBySlugData(slug: string): Promise<Article | null> {
+  const data = await fetchAPI(`/articles?filters[slug][$eq]=${slug}&populate=*`)
+  return data?.data?.[0] || null
+}
+
+async function getFeaturedArticlesData(limit = 5): Promise<Article[]> {
+  const data = await fetchAPI(`/articles?filters[featured][$eq]=true&populate=*&pagination[limit]=${limit}`)
+  return (data?.data || []).slice(0, limit)
+}
+
+async function getLatestArticlesData(limit = 10): Promise<Article[]> {
+  const data = await fetchAPI(`/articles?sort[0]=publishedAt:desc&populate=*&pagination[limit]=${limit}`)
+  return (data?.data || []).slice(0, limit)
+}
+
+async function getTopArticlesData(limit = 3): Promise<Article[]> {
+  const data = await fetchAPI(`/articles?sort[0]=views:desc&populate=*&pagination[limit]=${limit}`)
+  return (data?.data || []).slice(0, limit)
+}
+
+async function getArticlesByCategoryData(categorySlug: string): Promise<Article[]> {
+  const data = await fetchAPI(`/articles?filters[category][slug][$eq]=${categorySlug}&populate=*`)
+  return data?.data || []
+}
+
+async function getArticlesByTagData(tagSlug: string): Promise<Article[]> {
+  const data = await fetchAPI(`/articles?filters[tags][slug][$eq]=${tagSlug}&populate=*`)
+  return data?.data || []
+}
+
+async function getArticlesByAuthorData(authorSlug: string): Promise<Article[]> {
+  const data = await fetchAPI(`/articles?filters[author][slug][$eq]=${authorSlug}&populate=*`)
+  return data?.data || []
+}
+
+
+// Author API functions
+
+
+// Category API functions
+
+
+// Tag API functions
+
 
 // Mock data provider based on endpoint
 function getMockData(endpoint: string): any {
@@ -264,34 +463,6 @@ export async function getArticlesByAuthor(authorSlug: string): Promise<Article[]
   return data?.data || []
 }
 
-export async function getRelatedArticles(
-  currentArticleId: string,
-  category: Category,
-  tags: Tag[],
-  limit = 3,
-): Promise<Article[]> {
-  // First try to get articles from the same category
-  const data = await fetchAPI(
-    `/articles?filters[category][slug][$eq]=${category.slug}&filters[id][$ne]=${currentArticleId}&populate=*&pagination[limit]=${limit}`,
-  )
-
-  let articles = data?.data || []
-
-  if (articles.length < limit && tags.length > 0) {
-    // If not enough articles, get articles with similar tags
-    const tagSlugs = tags.map((tag) => tag.slug).join(",")
-    const tagData = await fetchAPI(
-      `/articles?filters[tags][slug][$in]=${tagSlugs}&filters[id][$ne]=${currentArticleId}&populate=*&pagination[limit]=${limit}`,
-    )
-
-    // Combine and deduplicate results
-    const combined = [...articles, ...(tagData?.data || [])]
-    const unique = combined.filter((article, index, self) => index === self.findIndex((a) => a.id === article.id))
-    articles = unique
-  }
-
-  return articles.slice(0, limit)
-}
 
 // Author API functions
 export async function getAuthors(): Promise<Author[]> {
@@ -321,7 +492,4 @@ export async function getTags(): Promise<Tag[]> {
   return data?.data || []
 }
 
-export async function getTagBySlug(slug: string): Promise<Tag | null> {
-  const data = await fetchAPI(`/tags?filters[slug][$eq]=${slug}`)
-  return data?.data?.[0] || null
-}
+
