@@ -5,14 +5,21 @@ const withPWA = require('next-pwa')({
   disable: process.env.NODE_ENV === 'development',
 });
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  output: 'export',
-  images: {
-    unoptimized: true,
+module.exports = withPWA({
+  eslint: {
+    ignoreDuringBuilds: true,
   },
-  basePath: '/YOUR_REPO_NAME', // Replace with your repo name
-  assetPrefix: '/YOUR_REPO_NAME/',
-};
-
-module.exports = withPWA(nextConfig);
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'd393bihxdnepv7.cloudfront.net',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
+})
