@@ -1,12 +1,19 @@
 import { notFound } from "next/navigation"
 import { ArticleGrid } from "@/components/article-grid"
-import { getCategoryBySlug, getArticlesByCategory } from "@/lib/api"
+import { getCategoryBySlug, getArticlesByCategory, getCategories } from "@/lib/api"
 import { Breadcrumb } from "@/components/breadcrumb"
 
 interface CategoryPageProps {
   params: {
     slug: string
   }
+}
+
+export async function generateStaticParams() {
+  const categories = await getCategories()
+  return categories.map((category) => ({
+    slug: category.slug,
+  }))
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {

@@ -1,13 +1,20 @@
 import { notFound } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ArticleGrid } from "@/components/article-grid"
-import { getAuthorBySlug, getArticlesByAuthor } from "@/lib/api"
+import { getAuthorBySlug, getArticlesByAuthor, getAuthors } from "@/lib/api"
 import { Breadcrumb } from "@/components/breadcrumb"
 
 interface AuthorPageProps {
   params: {
     slug: string
   }
+}
+
+export async function generateStaticParams() {
+  const authors = await getAuthors()
+  return authors.map((author) => ({
+    slug: author.slug,
+  }))
 }
 
 export default async function AuthorPage({ params }: AuthorPageProps) {

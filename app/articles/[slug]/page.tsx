@@ -5,12 +5,19 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { RelatedArticles } from "@/components/related-articles"
 import { formatDate } from "@/lib/utils"
-import { getArticleBySlug } from "@/lib/api"
+import { getArticleBySlug, getArticles } from "@/lib/api"
 
 interface ArticlePageProps {
   params: {
     slug: string
   }
+}
+
+export async function generateStaticParams() {
+  const articles = await getArticles()
+  return articles.map((article) => ({
+    slug: article.slug,
+  }))
 }
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
