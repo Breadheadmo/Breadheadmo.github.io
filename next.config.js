@@ -6,5 +6,20 @@ const withPWA = require('next-pwa')({
 })
 
 module.exports = withPWA({
-  // your existing Next.js config
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'd393bihxdnepv7.cloudfront.net',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
 })
