@@ -1,12 +1,17 @@
 {
-  "name": "TechPulse",
-  "short_name": "TechPulse",
-  "description": "Your tech news and articles platform",
+  "name": "Memeburn",
+  "short_name": "Memeburn",
+  "description": "African tech news and innovation platform",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "theme_color": "#dc2626",
   "icons": [
+    {
+      "src": "/memeburn.png",
+      "sizes": "120x40",
+      "type": "image/png"
+    },
     {
       "src": "/icons/icon-192x192.png",
       "sizes": "192x192",

@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { Zap } from "lucide-react"
 
 export function Footer() {
@@ -8,11 +9,16 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <Link href="/" className="flex items-center space-x-2">
-              <Zap className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold">TechPulse</span>
+              <Image 
+                src="/memeburn.png" 
+                alt="Memeburn" 
+                width={120} 
+                height={40} 
+                className="h-8 w-auto"
+              />
             </Link>
             <p className="text-sm text-muted-foreground">
-              Your premier destination for the latest technology news and insights.
+              Your premier destination for African technology news and innovation insights.
             </p>
           </div>
 
@@ -34,11 +40,7 @@ export function Footer() {
                   Authors
                 </Link>
               </li>
-              <li>
-                <Link href="/tags" className="text-muted-foreground hover:text-primary">
-                  Tags
-                </Link>
-              </li>
+
               <li>
                 <Link href="/about" className="text-muted-foreground hover:text-primary">
                   About
@@ -56,52 +58,28 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/categories/web-development" className="text-muted-foreground hover:text-primary">
-                  Web Development
+                <Link href="/categories/african" className="text-muted-foreground hover:text-primary">
+                  African Tech
                 </Link>
               </li>
               <li>
                 <Link href="/categories/mobile" className="text-muted-foreground hover:text-primary">
-                  Mobile
+                  Mobile & Fintech
                 </Link>
               </li>
               <li>
                 <Link href="/categories/startups" className="text-muted-foreground hover:text-primary">
-                  Startups
+                  Startups & Innovation
                 </Link>
               </li>
             </ul>
           </div>
 
-          <div>
-            <h3 className="font-semibold mb-4">Popular Tags</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/tags/react" className="text-muted-foreground hover:text-primary">
-                  #React
-                </Link>
-              </li>
-              <li>
-                <Link href="/tags/typescript" className="text-muted-foreground hover:text-primary">
-                  #TypeScript
-                </Link>
-              </li>
-              <li>
-                <Link href="/tags/nextjs" className="text-muted-foreground hover:text-primary">
-                  #Next.js
-                </Link>
-              </li>
-              <li>
-                <Link href="/tags/ai" className="text-muted-foreground hover:text-primary">
-                  #AI
-                </Link>
-              </li>
-            </ul>
-          </div>
+
         </div>
 
         <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} TechPulse. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Memeburn. All rights reserved.</p>
         </div>
       </div>
     </footer>

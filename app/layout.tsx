@@ -9,8 +9,8 @@ import { ThemeProvider } from "@/components/theme-provider"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "TechPulse - Latest Tech News",
-  description: "Stay updated with the latest technology news, trends, and insights.",
+  title: "Memeburn - African Tech & Innovation",
+  description: "Stay updated with the latest African technology news, innovation, and digital transformation insights.",
   generator: 'v0.dev',
   manifest: '/manifest.json'
 }

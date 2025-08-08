@@ -11,15 +11,15 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary/5 via-background to-secondary/5 border-b">
+      <section className="bg-gradient-to-br from-red-50 via-background to-red-50/30 border-b">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              Stay Ahead of the Tech Curve
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-red-600 to-red-500 bg-clip-text text-transparent">
+              African Tech & Innovation
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
-              Discover the latest in technology, AI, development, and innovation. Join thousands of tech professionals
-              who trust TechPulse for their daily dose of tech insights.
+              Discover the latest in African technology, innovation, and digital transformation. Join thousands of tech professionals
+              who trust Memeburn for their daily dose of African tech insights.
             </p>
             <Suspense fallback={<LoadingSpinner />}>
               <StatsSection />
@@ -38,7 +38,7 @@ export default function HomePage() {
       </section>
 
       {/* Main Content */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-16 bg-red-50/20">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Latest Articles */}

@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -13,7 +14,6 @@ export function Header() {
     { name: "Home", href: "/" },
     { name: "Categories", href: "/categories" },
     { name: "Authors", href: "/authors" },
-    { name: "Tags", href: "/tags" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ]
@@ -23,8 +23,13 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <Zap className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">TechPulse</span>
+            <Image 
+              src="/memeburn.png" 
+              alt="Memeburn" 
+              width={120} 
+              height={40} 
+              className="h-8 w-auto"
+            />
           </Link>
 
           {/* Desktop Navigation */}
