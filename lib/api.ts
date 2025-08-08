@@ -16,6 +16,14 @@ function getImage(coverUrl?: string): string | undefined {
   return `https://d393bihxdnepv7.cloudfront.net/${filename}`
 }
 
+// Helper function to get author avatar URL from Strapi avatar
+function getAuthorAvatar(avatarUrl?: string): string | undefined {
+  if (!avatarUrl) return undefined
+  
+  // The avatar URL is already in CloudFront format
+  return `https://${avatarUrl}`
+}
+
 // Helper function to map Strapi article to frontend Article type
 function mapStrapiArticleToArticle(strapiArticle: StrapiArticle): Article {
   // Convert plain text content with newlines to HTML
@@ -55,7 +63,7 @@ function mapStrapiArticleToArticle(strapiArticle: StrapiArticle): Article {
       id: strapiArticle.author.slug || strapiArticle.author.email,
       name: strapiArticle.author.name,
       bio: strapiArticle.author.bio?.[0]?.children?.[0]?.text || "",
-      avatar: undefined,
+      avatar: getAuthorAvatar(strapiArticle.author.avatar?.url),
       slug: strapiArticle.author.slug || strapiArticle.author.email,
     } : {
       id: "anonymous",
@@ -246,7 +254,7 @@ export async function getAuthors(): Promise<Author[]> {
             id: authorId,
             name: article.author.name,
             bio: article.author.bio?.[0]?.children?.[0]?.text || "",
-            avatar: undefined,
+            avatar: getAuthorAvatar(article.author.avatar?.url),
             slug: authorId,
           })
         }

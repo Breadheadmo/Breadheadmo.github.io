@@ -24,6 +24,12 @@ export interface StrapiAuthor {
   email: string
   bio: StrapiBio[]
   slug: string | null
+  avatar?: StrapiAvatar | null
+}
+
+export interface StrapiAvatar {
+  documentId: string
+  url: string
 }
 
 export interface StrapiBio {
